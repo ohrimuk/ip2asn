@@ -1,7 +1,26 @@
 #!/usr/bin/luajit
 
-string = require('string')
+require "bit"
 
+mask={}
+mask[24]=4294967040
+mask[23]=4294966784
+mask[22]=4294966272
+mask[21]=4294965248
+mask[20]=4294963200
+mask[19]=4294959104
+mask[18]=4294950912
+mask[17]=4294934528
+mask[16]=4294901760
+mask[15]=4294901760
+mask[14]=4294836224
+mask[13]=4294705152
+mask[12]=4294443008
+mask[11]=4293918720
+mask[10]=4292870144
+mask[9]=4290772992
+mask[8]=4286578688
+mask[7]=4261412864
 -------------------------------------------------
 function ip2num(s)
   local a = {}
@@ -22,7 +41,6 @@ function loadASn ()
       asn[tonumber(i)]=a
     end
   end
-  
 end
 -------------------------------------------------
 function processIPs ()
@@ -31,20 +49,33 @@ function processIPs ()
     for ip,c in string.gmatch(line,"(%g+) (%g+)") do
       n=ip2num(ip)
       as=asn[n]
+      m=24
+      while (as == nil and m > 7) do
+        m=m-1
+        n=bit.band(n,mask[m])
+        as=asn[n]
+      end 
       if as == nil then
         as=0
       end
-      print("ip="..ip.." as="..as.." c="..c)
+--      print("ip="..ip.." as="..as.." c="..c)
+      if(asc[as] == nil) then
+        asc[as]=c
+      else
+        asc[as]=asc[as]+c
+      end
     end
   end
-  
+end
+-------------------------------------------------
+function printCount()
+  for an,ac in pairs(asc) do 
+    print("AS[",an,"]=",ac)
+  end
 end
 ---------------------- BEGIN --------------------
 asn={}
+asc={}
 loadASn()
 processIPs()
-
---print("main: asn[3758095360]="..asn[3758095360])
-c='217.21.34.0'
-print(ip2num(c))
-print(asn[ip2num(c)])
+printCount()
