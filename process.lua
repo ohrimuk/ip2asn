@@ -36,11 +36,14 @@ end
 -------------------------------------------------
 function loadASn ()
   local file = "./ip2asn.csv"
+  local x =0
   for line in io.lines(file) do 
     for i,m,a in string.gmatch(line,"(%w+) (%w+) (%w+)") do
       asn[tonumber(i)]=a
     end
+    x=x+1
   end
+  print("Loaded ASn:",x)
 end
 -------------------------------------------------
 function processIPs ()
@@ -49,7 +52,6 @@ function processIPs ()
   for line in io.lines(file) do 
     for ip,c in string.gmatch(line,"(%g+) (%g+)") do
       c=tonumber(c)
-      x=x+1
       n=ip2num(ip)
       as=asn[n]
       m=24
@@ -68,6 +70,7 @@ function processIPs ()
         asc[as]=asc[as]+c
       end
     end
+    x=x+1
   end
   print("Loaded:",x)
 end
